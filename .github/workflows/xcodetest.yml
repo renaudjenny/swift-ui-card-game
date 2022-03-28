@@ -1,0 +1,58 @@
+name: Xcode Unit Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-ios:
+    runs-on: macOS-11
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Linter
+      run: swiftlint
+
+    - name: Xcode version
+      run: /usr/bin/xcodebuild -version
+
+    - name: List all available build targets and schemes
+      run: xcodebuild -list
+
+    - name: Create iPhone SE Simulator
+      run: xcrun simctl create "iPhone SE (1st generation)" "iPhone SE (1st generation)"
+
+    - name: Xcode test on iPhone SE
+      run: xcodebuild clean test -scheme SwiftUICardGame -destination 'platform=iOS Simulator,name=iPhone SE (1st generation)'
+
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: failed-screenshots
+        path: '~/Library/Developer/CoreSimulator/Devices/*/data/tmp/*Tests'
+        retention-days: 5
+
+  build-macos:
+    runs-on: macOS-11
+
+    env:
+      SNAPSHOT_ARTIFACTS: "SnapshotTesting/"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: List all available build targets and schemes
+      run: xcodebuild -list
+
+    - name: Xcode test on Mac
+      run: xcodebuild clean test -scheme SwiftUICardGame -destination 'platform=OS X'
+
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: failed-screenshots
+        path: '/tmp/SnapshotTesting'
+        retention-days: 5
