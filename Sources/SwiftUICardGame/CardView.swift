@@ -25,7 +25,7 @@ struct CardViewAllCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 3
+        @State private var displayedCardIndex = 7
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
 

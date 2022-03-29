@@ -121,23 +121,63 @@ public struct StandardDeckCard: Card {
                 verticalSuitView(count: rank.value, width: geometry.size.width)
                     .frame(width: geometry.size.width)
             }
-        case .four:
+        case .four, .six:
             GeometryReader { geometry in
                 HStack {
                     verticalSuitView(count: rank.value/2, width: geometry.size.width)
                     verticalSuitView(count: rank.value/2, width: geometry.size.width)
                 }.frame(width: geometry.size.width)
             }
-        case .five, .six, .seven, .height, .nine, .ten, .jack, .queen, .king:
+        case .five:
+            GeometryReader { geometry in
+                ZStack {
+                    HStack {
+                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                    }
+                    suitView.frame(width: geometry.size.width * 30/100)
+                }.frame(width: geometry.size.width)
+            }
+        case .seven:
+            GeometryReader { geometry in
+                ZStack {
+                    HStack {
+                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                    }
+                    suitView
+                        .frame(width: geometry.size.width * 30/100)
+                        .offset(x: 0, y: geometry.size.height * -16/100)
+                }.frame(width: geometry.size.width)
+            }
+        case .height:
+            GeometryReader { geometry in
+                ZStack {
+                    HStack {
+                        verticalSuitView(count: 3, width: geometry.size.width)
+                        verticalSuitView(count: 3, width: geometry.size.width)
+                    }
+                    suitView
+                        .frame(width: geometry.size.width * 30/100)
+                        .offset(x: 0, y: geometry.size.height * -16/100)
+                    suitView
+                        .frame(width: geometry.size.width * 30/100)
+                        .rotationEffect(.radians(.pi))
+                        .offset(x: 0, y: geometry.size.height * 20/100)
+                }.frame(width: geometry.size.width)
+            }
+        case .nine, .ten, .jack, .queen, .king:
             EmptyView()
         }
     }
 
     private func verticalSuitView(count: Int, width: CGFloat) -> some View {
         VStack {
-            ForEach(Array(repeating: true, count: count).interspersed(with: false), id:\.self) {
-                if $0 {
+            ForEach(Array(Array(repeating: true, count: count).interspersed(with: false).enumerated()), id:\.offset) {
+                if $1 && $0 <= (count * 2 - 2)/2 {
                     suitView.frame(width: width * 30/100)
+                } else if $1 {
+                    suitView.frame(width: width * 30/100).rotationEffect(.radians(.pi))
                 } else {
                     Spacer()
                 }
