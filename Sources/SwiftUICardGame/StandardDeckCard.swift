@@ -128,14 +128,14 @@ public struct StandardDeckCard: Card {
                     verticalSuitView(count: rank.value/2, width: geometry.size.width)
                 }.frame(width: geometry.size.width)
             }
-        case .five:
+        case .five, .nine:
             GeometryReader { geometry in
                 ZStack {
                     HStack {
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                     }
-                    suitView(width: geometry.size.width)
+                    suitView(width: geometry.size.width).offset(x: 0, y: geometry.size.height * -2/100)
                 }.frame(width: geometry.size.width)
             }
         case .seven:
@@ -163,7 +163,21 @@ public struct StandardDeckCard: Card {
                         .offset(x: 0, y: geometry.size.height * 20/100)
                 }.frame(width: geometry.size.width)
             }
-        case .nine, .ten, .jack, .queen, .king:
+        case .ten:
+            GeometryReader { geometry in
+                ZStack {
+                    HStack {
+                        verticalSuitView(count: 4, width: geometry.size.width)
+                        verticalSuitView(count: 4, width: geometry.size.width)
+                    }
+                    suitView(width: geometry.size.width)
+                        .offset(x: 0, y: geometry.size.height * -23/100)
+                    suitView(width: geometry.size.width)
+                        .rotationEffect(.radians(.pi))
+                        .offset(x: 0, y: geometry.size.height * 23/100)
+                }.frame(width: geometry.size.width)
+            }
+        case .jack, .queen, .king:
             EmptyView()
         }
     }
