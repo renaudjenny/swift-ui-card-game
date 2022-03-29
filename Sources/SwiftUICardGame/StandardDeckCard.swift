@@ -135,7 +135,7 @@ public struct StandardDeckCard: Card {
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                     }
-                    suitView.frame(width: geometry.size.width * 30/100)
+                    suitView(width: geometry.size.width)
                 }.frame(width: geometry.size.width)
             }
         case .seven:
@@ -145,8 +145,7 @@ public struct StandardDeckCard: Card {
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                         verticalSuitView(count: rank.value/2, width: geometry.size.width)
                     }
-                    suitView
-                        .frame(width: geometry.size.width * 30/100)
+                    suitView(width: geometry.size.width)
                         .offset(x: 0, y: geometry.size.height * -16/100)
                 }.frame(width: geometry.size.width)
             }
@@ -157,11 +156,9 @@ public struct StandardDeckCard: Card {
                         verticalSuitView(count: 3, width: geometry.size.width)
                         verticalSuitView(count: 3, width: geometry.size.width)
                     }
-                    suitView
-                        .frame(width: geometry.size.width * 30/100)
+                    suitView(width: geometry.size.width)
                         .offset(x: 0, y: geometry.size.height * -16/100)
-                    suitView
-                        .frame(width: geometry.size.width * 30/100)
+                    suitView(width: geometry.size.width)
                         .rotationEffect(.radians(.pi))
                         .offset(x: 0, y: geometry.size.height * 20/100)
                 }.frame(width: geometry.size.width)
@@ -175,9 +172,9 @@ public struct StandardDeckCard: Card {
         VStack {
             ForEach(Array(Array(repeating: true, count: count).interspersed(with: false).enumerated()), id:\.offset) {
                 if $1 && $0 <= (count * 2 - 2)/2 {
-                    suitView.frame(width: width * 30/100)
+                    suitView(width: width)
                 } else if $1 {
-                    suitView.frame(width: width * 30/100).rotationEffect(.radians(.pi))
+                    suitView(width: width).rotationEffect(.radians(.pi))
                 } else {
                     Spacer()
                 }
@@ -195,6 +192,7 @@ public struct StandardDeckCard: Card {
 
     private var suitView: some View {
         let size = CGSize(width: 400, height: 400)
+        #if os(iOS)
         return Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
             (suitEmoji as NSString).draw(
                 in: CGRect(origin: .zero, size: size),
@@ -203,7 +201,25 @@ public struct StandardDeckCard: Card {
         })
         .resizable()
         .aspectRatio(contentMode: .fit)
+        #elseif os(macOS)
+        let image = NSImage(size: size)
+        image.lockFocus()
+        (suitEmoji as NSString).draw(
+            in: CGRect(origin: .zero, size: size),
+            withAttributes: [.font: NSFont.systemFont(ofSize: 360)]
+        )
+        image.unlockFocus()
+        return Image(nsImage: image)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+        #else
+        return Image(systemName: "questionmark")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+        #endif
     }
+
+    private func suitView(width: CGFloat) -> some View { suitView.frame(width: width * 25/100) }
 }
 
 private struct StandardCardShape: InsettableShape {
