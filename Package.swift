@@ -11,11 +11,15 @@ let package = Package(
             name: "SwiftUICardGame",
             targets: ["SwiftUICardGame"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0"),
+    ],
     targets: [
         .target(
             name: "SwiftUICardGame",
-            dependencies: []),
+            dependencies: [
+                .productItem(name: "Algorithms", package: "swift-algorithms", condition: nil),
+            ]),
         .testTarget(
             name: "SwiftUICardGameTests",
             dependencies: ["SwiftUICardGame"]),

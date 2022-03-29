@@ -19,12 +19,25 @@ struct CardView_Previews: PreviewProvider {
     }
 }
 
-struct CardViewOnTable_Previews: PreviewProvider {
+struct CardViewAllCards_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            CardView(.standardDeck(.ace, of: .spades))
-            CardView(.standardDeck(.two, of: .diamonds))
-            CardView(.standardDeck(.queen, of: .hearts))
+        Preview()
+    }
+
+    private struct Preview: View {
+        @State private var displayedCardIndex = 3
+        private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
+        private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
+
+        var body: some View {
+            VStack {
+                displayedCard.foreground
+                HStack {
+                    Button("Previous") { if displayedCardIndex > 0 { displayedCardIndex -= 1 } }
+                    Spacer()
+                    Button("Next") { if displayedCardIndex < 51 { displayedCardIndex += 1 } }
+                }
+            }.padding()
         }
     }
 }

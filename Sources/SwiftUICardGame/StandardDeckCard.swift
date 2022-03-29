@@ -1,7 +1,8 @@
 import SwiftUI
+import Algorithms
 
 public struct StandardDeckCard: Card {
-    public enum Rank: String {
+    public enum Rank: String, CaseIterable {
         case ace
         case two
         case three
@@ -33,9 +34,14 @@ public struct StandardDeckCard: Card {
             case .king: return "K"
             }
         }
+
+        var value: Int {
+            guard self != .ace else { return 14 }
+            return (Rank.allCases.firstIndex(of: self) ?? 0) + 1
+        }
     }
 
-    public enum Suit: String {
+    public enum Suit: String, CaseIterable {
         case clubs
         case diamonds
         case hearts
@@ -85,7 +91,7 @@ public struct StandardDeckCard: Card {
             .fill(Color.red)
             .clipShape(StandardCardShape())
     }
-    public let isFacedUp: Bool = false
+    public var isFacedUp: Bool = false
     public var accessibilityIdentifier: String {
         "\(rank.rawValue)-\(suit.rawValue)"
     }
@@ -109,10 +115,35 @@ public struct StandardDeckCard: Card {
     private var mainView: some View {
         switch rank {
         case .ace:
-            Text(suitEmoji).font(.largeTitle)
-        case .two, .three, .four, .five, .six, .seven, .height, .nine, .ten, .jack, .queen, .king:
+            suitView.aspectRatio(35/100, contentMode: .fit)
+        case .two, .three:
+            GeometryReader { geometry in
+                verticalSuitView(count: rank.value, width: geometry.size.width)
+                    .frame(width: geometry.size.width)
+            }
+        case .four:
+            GeometryReader { geometry in
+                HStack {
+                    verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                    verticalSuitView(count: rank.value/2, width: geometry.size.width)
+                }.frame(width: geometry.size.width)
+            }
+        case .five, .six, .seven, .height, .nine, .ten, .jack, .queen, .king:
             EmptyView()
         }
+    }
+
+    private func verticalSuitView(count: Int, width: CGFloat) -> some View {
+        VStack {
+            ForEach(Array(repeating: true, count: count).interspersed(with: false), id:\.self) {
+                if $0 {
+                    suitView.frame(width: width * 30/100)
+                } else {
+                    Spacer()
+                }
+            }
+        }
+        .padding()
     }
 
     private var cornerView: some View {
@@ -120,6 +151,18 @@ public struct StandardDeckCard: Card {
             Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
             Text(suitEmoji).font(.body)
         }
+    }
+
+    private var suitView: some View {
+        let size = CGSize(width: 400, height: 400)
+        return Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
+            (suitEmoji as NSString).draw(
+                in: CGRect(origin: .zero, size: size),
+                withAttributes: [.font: UIFont.systemFont(ofSize: 360)]
+            )
+        })
+        .resizable()
+        .aspectRatio(contentMode: .fit)
     }
 }
 
@@ -151,5 +194,15 @@ public extension Card where Self == StandardDeckCard {
         action: @escaping () -> Void = { }
     ) -> StandardDeckCard {
         StandardDeckCard(rank: rank, suit: suit, action: action)
+    }
+}
+
+public extension Array where Element == StandardDeckCard {
+    static func standard52Deck(action: @escaping (StandardDeckCard.Rank, StandardDeckCard.Suit) -> Void) -> Self {
+        StandardDeckCard.Suit.allCases.flatMap { suit in
+            StandardDeckCard.Rank.allCases.map { rank in
+                StandardDeckCard(rank: rank, suit: suit) { action(rank, suit) }
+            }
+        }
     }
 }
