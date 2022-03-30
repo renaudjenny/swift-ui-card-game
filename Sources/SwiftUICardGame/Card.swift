@@ -1,6 +1,6 @@
 import SwiftUI
 
-public protocol Card {
+public protocol CardRepresentable {
     associatedtype ForegroundView: View
     associatedtype BackgroundView: View
 

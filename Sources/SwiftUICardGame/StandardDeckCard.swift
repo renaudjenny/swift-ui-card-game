@@ -1,7 +1,7 @@
 import SwiftUI
 import Algorithms
 
-public struct StandardDeckCard: Card {
+public struct StandardDeckCard: CardRepresentable {
     public enum Rank: String, CaseIterable {
         case ace
         case two
@@ -257,7 +257,7 @@ private struct StandardCardShape: InsettableShape {
     }
 }
 
-public extension Card where Self == StandardDeckCard {
+public extension CardRepresentable where Self == StandardDeckCard {
     static func standardDeck(
         _ rank: StandardDeckCard.Rank,
         of suit: StandardDeckCard.Suit,

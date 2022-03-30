@@ -1,20 +1,31 @@
 import SwiftUI
 
-public struct CardView<C: Card>: View {
-    let card: C
+public struct CardView<Card: CardRepresentable, ChangeFaceAnimation: CardFaceChangeAnimatable>: View {
+    let card: Card
+    let changeFaceAnimation: ChangeFaceAnimation
 
-    public init(_ card: C) {
+    public init(_ card: Card, changeFaceAnimation: ChangeFaceAnimation) {
         self.card = card
+        self.changeFaceAnimation = changeFaceAnimation
     }
 
     public var body: some View {
         Button(action: card.action) {
             if card.isFacedUp {
-                card.foreground
+                card.foreground.transition(changeFaceAnimation.transition)
             } else {
-                card.background
+                card.background.transition(changeFaceAnimation.transition)
             }
-        }.buttonStyle(.plain)
+        }
+        .buttonStyle(.plain)
+        .modifier(changeFaceAnimation.modifier)
+    }
+}
+
+public extension CardView where ChangeFaceAnimation == CardFaceChange3DRotate {
+    init(_ card: Card) {
+        self.card = card
+        self.changeFaceAnimation = .rotateTransition(isFacedUp: card.isFacedUp)
     }
 }
 
@@ -30,14 +41,14 @@ struct CardView_Previews: PreviewProvider {
         var body: some View {
             VStack {
                 CardView(
-                    PreviewCard(isFacedUp: isFacedUp) { isFacedUp.toggle() }
+                    PreviewCard(isFacedUp: isFacedUp) { withAnimation(.easeInOut) { isFacedUp.toggle() } }
                 ).padding()
-                Text(isFacedUp ? "Is faced up" : "Is faced down")
+                Text(isFacedUp ? "Is faced up" : "Is faced down").animation(nil)
             }
         }
     }
 
-    private struct PreviewCard: Card {
+    private struct PreviewCard: CardRepresentable {
         var foreground: some View {
             ZStack {
                 Rectangle().strokeBorder(lineWidth: 2)

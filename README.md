@@ -10,8 +10,8 @@ This library has been tested
 ## TODO
 
 - [X] Design card
-- [ ] Customise background and foreground
-- [ ] Flip the Card
+- [X] Customise background and foreground
+- [X] Flip the Card
 - [ ] Organise cards in a deck way design
 - [ ] etc.
 
