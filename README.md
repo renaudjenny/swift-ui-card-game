@@ -9,7 +9,7 @@ This library has been tested
 
 ## TODO
 
-- [ ] Design card
+- [X] Design card
 - [ ] Customise background and foreground
 - [ ] Flip the Card
 - [ ] Organise cards in a deck way design

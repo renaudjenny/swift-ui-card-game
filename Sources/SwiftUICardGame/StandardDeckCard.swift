@@ -184,7 +184,7 @@ public struct StandardDeckCard: Card {
 
     private func verticalSuitView(count: Int, width: CGFloat) -> some View {
         VStack {
-            ForEach(Array(Array(repeating: true, count: count).interspersed(with: false).enumerated()), id:\.offset) {
+            ForEach(Array(Array(repeating: true, count: count).interspersed(with: false).enumerated()), id: \.offset) {
                 if $1 && $0 <= (count * 2 - 2)/2 {
                     suitView(width: width)
                 } else if $1 {
@@ -276,3 +276,28 @@ public extension Array where Element == StandardDeckCard {
         }
     }
 }
+
+#if DEBUG
+struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
+    static var previews: some View {
+        Preview()
+    }
+
+    private struct Preview: View {
+        @State private var displayedCardIndex = 9
+        private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
+        private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
+
+        var body: some View {
+            VStack {
+                displayedCard.foreground
+                HStack {
+                    Button("Previous") { if displayedCardIndex > 0 { displayedCardIndex -= 1 } }
+                    Spacer()
+                    Button("Next") { if displayedCardIndex < 51 { displayedCardIndex += 1 } }
+                }
+            }.padding()
+        }
+    }
+}
+#endif

@@ -12,4 +12,3 @@ public protocol Card {
     var accessibilityFacedUpText: Text { get }
     var action: () -> Void { get }
 }
-
