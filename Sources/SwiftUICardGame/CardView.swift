@@ -19,6 +19,7 @@ public struct CardView<Card: CardRepresentable, ChangeFaceAnimation: CardFaceCha
         }
         .buttonStyle(.plain)
         .modifier(changeFaceAnimation.modifier)
+        .animation(.easeInOut(duration: 2/5), value: card.isFacedUp)
     }
 }
 
@@ -41,7 +42,7 @@ struct CardView_Previews: PreviewProvider {
         var body: some View {
             VStack {
                 CardView(
-                    PreviewCard(isFacedUp: isFacedUp) { withAnimation(.easeInOut) { isFacedUp.toggle() } }
+                    PreviewCard(isFacedUp: isFacedUp) { isFacedUp.toggle() }
                 ).padding()
                 Text(isFacedUp ? "Is faced up" : "Is faced down").animation(nil)
             }
