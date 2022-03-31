@@ -59,37 +59,36 @@ public struct StandardDeckCard: CardRepresentable {
     public let suit: Suit
     private(set) public var action: () -> Void
     public var foreground: some View {
-        StandardCardShape()
-            .strokeBorder()
-            .background {
-                ZStack {
-                    Color.white
+        ZStack {
+            Color.white
 
-                    mainView
+            mainView
 
-                    VStack {
-                        HStack {
-                            cornerView
-                            Spacer()
-                            cornerView
-                        }.padding()
-                        Spacer()
-                        HStack {
-                            cornerView
-                            Spacer()
-                            cornerView
-                        }
-                        .padding()
-                        .rotationEffect(.radians(.pi))
-                    }
+            VStack {
+                HStack {
+                    cornerView
+                    Spacer()
+                    cornerView
+                }.padding()
+                Spacer()
+                HStack {
+                    cornerView
+                    Spacer()
+                    cornerView
                 }
+                .padding()
+                .rotationEffect(.radians(.pi))
             }
-            .aspectRatio(5/7, contentMode: .fit)
+        }
+        .aspectRatio(5/7, contentMode: .fit)
+        .clipShape(StandardCardShape())
+        .overlay(StandardCardShape().strokeBorder())
     }
     public var background: some View {
         Rectangle()
             .fill(Color.red)
             .clipShape(StandardCardShape())
+            .overlay(StandardCardShape().strokeBorder())
     }
     public var isFacedUp: Bool = false
     public var accessibilityIdentifier: String {
