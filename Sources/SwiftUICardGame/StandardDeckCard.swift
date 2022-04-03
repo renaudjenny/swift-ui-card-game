@@ -112,88 +112,98 @@ public struct StandardDeckCard: CardRepresentable {
 
     @ViewBuilder
     private var mainView: some View {
-        switch rank {
-        case .ace:
-            suitView.aspectRatio(35/100, contentMode: .fit)
-        case .two, .three:
-            GeometryReader { geometry in
-                verticalSuitView(count: rank.value, width: geometry.size.width)
-                    .frame(width: geometry.size.width)
+        GeometryReader { geometry in
+            VStack {
+                switch rank {
+                case .ace:
+                    suitView.aspectRatio(35/100, contentMode: .fit)
+                case .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
+                    suitViews(count: rank.value, geometry: geometry)
+                case .jack, .queen, .king:
+                    EmptyView()
+                }
             }
-        case .four, .six:
-            GeometryReader { geometry in
-                HStack {
-                    verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                    verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                }.frame(width: geometry.size.width)
-            }
-        case .five, .nine:
-            GeometryReader { geometry in
-                ZStack {
-                    HStack {
-                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                    }
-                    suitView(width: geometry.size.width).offset(x: 0, y: geometry.size.height * -2/100)
-                }.frame(width: geometry.size.width)
-            }
-        case .seven:
-            GeometryReader { geometry in
-                ZStack {
-                    HStack {
-                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                        verticalSuitView(count: rank.value/2, width: geometry.size.width)
-                    }
-                    suitView(width: geometry.size.width)
-                        .offset(x: 0, y: geometry.size.height * -16/100)
-                }.frame(width: geometry.size.width)
-            }
-        case .height:
-            GeometryReader { geometry in
-                ZStack {
-                    HStack {
-                        verticalSuitView(count: 3, width: geometry.size.width)
-                        verticalSuitView(count: 3, width: geometry.size.width)
-                    }
-                    suitView(width: geometry.size.width)
-                        .offset(x: 0, y: geometry.size.height * -16/100)
-                    suitView(width: geometry.size.width)
-                        .rotationEffect(.radians(.pi))
-                        .offset(x: 0, y: geometry.size.height * 20/100)
-                }.frame(width: geometry.size.width)
-            }
-        case .ten:
-            GeometryReader { geometry in
-                ZStack {
-                    HStack {
-                        verticalSuitView(count: 4, width: geometry.size.width)
-                        verticalSuitView(count: 4, width: geometry.size.width)
-                    }
-                    suitView(width: geometry.size.width)
-                        .offset(x: 0, y: geometry.size.height * -23/100)
-                    suitView(width: geometry.size.width)
-                        .rotationEffect(.radians(.pi))
-                        .offset(x: 0, y: geometry.size.height * 23/100)
-                }.frame(width: geometry.size.width)
-            }
-        case .jack, .queen, .king:
-            EmptyView()
+            .frame(width: geometry.size.width * 70/100, height: geometry.size.height * 90/100)
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
 
-    private func verticalSuitView(count: Int, width: CGFloat) -> some View {
-        VStack {
-            ForEach(Array(Array(repeating: true, count: count).interspersed(with: false).enumerated()), id: \.offset) {
-                if $1 && $0 <= (count * 2 - 2)/2 {
-                    suitView(width: width)
-                } else if $1 {
-                    suitView(width: width).rotationEffect(.radians(.pi))
-                } else {
+    @ViewBuilder
+    private func suitViews(count: Int, geometry: GeometryProxy) -> some View {
+        switch count {
+        case 2:
+            VStack {
+                suitView(availableWidth: geometry.size.width)
+                Spacer()
+                suitView(rotate: true, availableWidth: geometry.size.width)
+            }
+        case 3:
+            ZStack {
+                AnyView(suitViews(count: 2, geometry: geometry))
+                suitView(availableWidth: geometry.size.width)
+            }
+        case 4:
+            HStack {
+                AnyView(suitViews(count: 2, geometry: geometry))
+                Spacer()
+                AnyView(suitViews(count: 2, geometry: geometry))
+            }
+        case 5:
+            ZStack {
+                AnyView(suitViews(count: 4, geometry: geometry))
+                suitView(availableWidth: geometry.size.width)
+            }
+        case 6:
+            HStack {
+                AnyView(suitViews(count: 3, geometry: geometry))
+                Spacer()
+                AnyView(suitViews(count: 3, geometry: geometry))
+            }
+        case 7:
+            ZStack {
+                AnyView(suitViews(count: 6, geometry: geometry))
+                suitView(availableWidth: geometry.size.width)
+                    .offset(x: 0, y: geometry.size.height * -16/100)
+            }
+        case 8:
+            HStack {
+                VStack {
+                    suitView(availableWidth: geometry.size.width)
                     Spacer()
+                    suitView(availableWidth: geometry.size.width)
+                    Spacer()
+                    suitView(rotate: true, availableWidth: geometry.size.width)
+                    Spacer()
+                    suitView(rotate: true, availableWidth: geometry.size.width)
+                }
+                Spacer()
+                VStack {
+                    suitView(availableWidth: geometry.size.width)
+                    Spacer()
+                    suitView(availableWidth: geometry.size.width)
+                    Spacer()
+                    suitView(rotate: true, availableWidth: geometry.size.width)
+                    Spacer()
+                    suitView(rotate: true, availableWidth: geometry.size.width)
                 }
             }
+        case 9:
+            ZStack {
+                AnyView(suitViews(count: 8, geometry: geometry))
+                suitView(availableWidth: geometry.size.width)
+                    .offset(x: 0, y: geometry.size.height * -2/100)
+            }
+        case 10:
+            ZStack {
+                AnyView(suitViews(count: 8, geometry: geometry))
+                suitView(availableWidth: geometry.size.width)
+                    .offset(x: 0, y: geometry.size.height * -23/100)
+                suitView(availableWidth: geometry.size.width)
+                    .offset(x: 0, y: geometry.size.height * 21/100)
+            }
+        default:
+            EmptyView()
         }
-        .padding()
     }
 
     private var cornerView: some View {
@@ -203,36 +213,35 @@ public struct StandardDeckCard: CardRepresentable {
         }
     }
 
-    private var suitView: some View {
+    private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
         let size = CGSize(width: 400, height: 400)
         #if os(iOS)
-        return Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
+        let image = Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
             (suitEmoji as NSString).draw(
                 in: CGRect(origin: .zero, size: size),
                 withAttributes: [.font: UIFont.systemFont(ofSize: 360)]
             )
         })
-        .resizable()
-        .aspectRatio(contentMode: .fit)
         #elseif os(macOS)
-        let image = NSImage(size: size)
-        image.lockFocus()
+        let nativeImage = NSImage(size: size)
+        nativeImage.lockFocus()
         (suitEmoji as NSString).draw(
             in: CGRect(origin: .zero, size: size),
             withAttributes: [.font: NSFont.systemFont(ofSize: 360)]
         )
-        image.unlockFocus()
-        return Image(nsImage: image)
-            .resizable()
-            .aspectRatio(contentMode: .fit)
+        nativeImage.unlockFocus()
+        image = Image(nsImage: nativeImage)
         #else
-        return Image(systemName: "questionmark")
+        image = Image(systemName: "questionmark").resizable()
+        #endif
+        return image
             .resizable()
             .aspectRatio(contentMode: .fit)
-        #endif
+            .rotationEffect(rotate ? .radians(.pi) : .zero)
+            .frame(width: availableWidth.map { $0 * 25/100 })
     }
 
-    private func suitView(width: CGFloat) -> some View { suitView.frame(width: width * 25/100) }
+    private var suitView: some View { suitView() }
 }
 
 private struct StandardCardShape: InsettableShape {
@@ -283,17 +292,23 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 9
+        @State private var displayedCardIndex = 10 + 12
+        @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
 
         var body: some View {
             VStack {
-                displayedCard.foreground
+                Spacer()
+                displayedCard.foreground.frame(maxHeight: maxHeight)
+                Spacer()
                 HStack {
                     Button("Previous") { if displayedCardIndex > 0 { displayedCardIndex -= 1 } }
                     Spacer()
                     Button("Next") { if displayedCardIndex < 51 { displayedCardIndex += 1 } }
+                }
+                Slider(value: $maxHeight, in: 10...1000) {
+                    Text("Height")
                 }
             }.padding()
         }
