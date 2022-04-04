@@ -230,9 +230,9 @@ public struct StandardDeckCard: CardRepresentable {
             withAttributes: [.font: NSFont.systemFont(ofSize: 360)]
         )
         nativeImage.unlockFocus()
-        image = Image(nsImage: nativeImage)
+        let image = Image(nsImage: nativeImage)
         #else
-        image = Image(systemName: "questionmark").resizable()
+        let image = Image(systemName: "questionmark").resizable()
         #endif
         return image
             .resizable()
