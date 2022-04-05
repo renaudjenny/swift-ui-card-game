@@ -61,24 +61,8 @@ public struct StandardDeckCard: CardRepresentable {
     public var foreground: some View {
         ZStack {
             Color.white
-
             mainView
-
-            VStack {
-                HStack {
-                    cornerView
-                    Spacer()
-                    cornerView
-                }.padding()
-                Spacer()
-                HStack {
-                    cornerView
-                    Spacer()
-                    cornerView
-                }
-                .padding()
-                .rotationEffect(.radians(.pi))
-            }
+            cornerViews
         }
         .aspectRatio(5/7, contentMode: .fit)
         .clipShape(StandardCardShape())
@@ -206,14 +190,44 @@ public struct StandardDeckCard: CardRepresentable {
         }
     }
 
-    private var cornerView: some View {
-        VStack {
-            Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
-            Text(suitEmoji).font(.body)
+    private var cornerViews: some View {
+        GeometryReader { geometry in
+            ZStack {
+                cornerView(availableSize: geometry.size)
+                    .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 4/100)
+                cornerView(availableSize: geometry.size)
+                    .rotationEffect(.radians(.pi))
+                    .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 76/100)
+                cornerView(availableSize: geometry.size)
+                    .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 4/100)
+                cornerView(availableSize: geometry.size)
+                    .rotationEffect(.radians(.pi))
+                    .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 76/100)
+            }
         }
     }
 
+    private func cornerView(availableSize: CGSize) -> some View {
+        VStack(spacing: 0) {
+            Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+            suitView
+        }
+        .frame(width: availableSize.width * 20/100, height: availableSize.height * 20/100)
+    }
+
+    @ViewBuilder
     private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
+        switch suit {
+        case .clubs, .hearts, .spades:
+            deprecatedImageSuitView(rotate: rotate, availableWidth: availableWidth)
+        case .diamonds:
+            DiamondsShape()
+                .fill(Color.red, style: .init(eoFill: true, antialiased: true))
+                .frame(width: availableWidth.map { $0 * 25/100 })
+        }
+    }
+
+    private func deprecatedImageSuitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
         let size = CGSize(width: 400, height: 400)
         #if os(iOS)
         let image = Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
