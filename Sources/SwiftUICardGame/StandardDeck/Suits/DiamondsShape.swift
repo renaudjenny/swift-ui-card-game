@@ -98,9 +98,9 @@ struct DiamondsShape: Shape {
 #if DEBUG
 struct DiamondsShape_Previews: PreviewProvider {
     static var previews: some View {
-        ZStack {
-            DiamondsShape().fill(style: .init(eoFill: true))
-        }.frame(width: 400, height: 400)
+        DiamondsShape()
+            .fill(style: .init(eoFill: true))
+            .frame(width: 400, height: 400)
     }
 }
 #endif
