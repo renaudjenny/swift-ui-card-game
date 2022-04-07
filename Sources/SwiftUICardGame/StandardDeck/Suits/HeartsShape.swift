@@ -62,7 +62,8 @@ struct HeartsShape: Shape {
 #if DEBUG
 struct HeartsShape_Previews: PreviewProvider {
     static var previews: some View {
-        HeartsShape().fill(style: .init(eoFill: true))
+        HeartsShape()
+            .fill(style: .init(eoFill: true))
             .frame(width: 400, height: 400)
     }
 }

@@ -218,7 +218,7 @@ public struct StandardDeckCard: CardRepresentable {
     @ViewBuilder
     private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
         switch suit {
-        case .clubs, .spades:
+        case .clubs:
             deprecatedImageSuitView(rotate: rotate, availableWidth: availableWidth)
         case .hearts:
             HeartsShape()
@@ -228,6 +228,10 @@ public struct StandardDeckCard: CardRepresentable {
             DiamondsShape()
                 .fill(Color.red, style: .init(eoFill: true))
                 .frame(width: availableWidth.map { $0 * 25/100 })
+        case .spades:
+            SpadesShape()
+                .fill(Color.black, style: .init(eoFill: true))
+                .frame(width: availableWidth.map { $0 * 20/100 })
         }
     }
 
@@ -310,7 +314,7 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 35
+        @State private var displayedCardIndex = 48
         @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
