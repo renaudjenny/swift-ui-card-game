@@ -85,15 +85,6 @@ public struct StandardDeckCard: CardRepresentable {
         Text("\(rank.rawValue) of \(suit.rawValue)")
     }
 
-    private var suitEmoji: String {
-        switch suit {
-        case .clubs: return "♣️"
-        case .diamonds: return "♦️"
-        case .hearts: return "♥️"
-        case .spades: return "♠️"
-        }
-    }
-
     @ViewBuilder
     private var mainView: some View {
         GeometryReader { geometry in
@@ -182,7 +173,7 @@ public struct StandardDeckCard: CardRepresentable {
                 AnyView(suitViews(count: 8, geometry: geometry))
                 suitView(availableWidth: geometry.size.width)
                     .offset(x: 0, y: geometry.size.height * -23/100)
-                suitView(availableWidth: geometry.size.width)
+                suitView(rotate: true, availableWidth: geometry.size.width)
                     .offset(x: 0, y: geometry.size.height * 21/100)
             }
         default:
@@ -215,52 +206,21 @@ public struct StandardDeckCard: CardRepresentable {
         .frame(width: availableSize.width * 20/100, height: availableSize.height * 20/100)
     }
 
-    @ViewBuilder
     private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
-        switch suit {
-        case .clubs:
-            deprecatedImageSuitView(rotate: rotate, availableWidth: availableWidth)
-        case .hearts:
-            HeartsShape()
-                .fill(Color.red, style: .init(eoFill: true))
-                .frame(width: availableWidth.map { $0 * 20/100 })
-        case .diamonds:
-            DiamondsShape()
-                .fill(Color.red, style: .init(eoFill: true))
-                .frame(width: availableWidth.map { $0 * 25/100 })
-        case .spades:
-            SpadesShape()
-                .fill(Color.black, style: .init(eoFill: true))
-                .frame(width: availableWidth.map { $0 * 20/100 })
-        }
-    }
+        VStack {
+            switch suit {
+            case .clubs:
+                ClubsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.black, style: .init(eoFill: true))
+            case .hearts:
+                HeartsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.red, style: .init(eoFill: true))
+            case .diamonds:
+                DiamondsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.red, style: .init(eoFill: true))
+            case .spades:
+                SpadesShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.black, style: .init(eoFill: true))
 
-    private func deprecatedImageSuitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
-        let size = CGSize(width: 400, height: 400)
-        #if os(iOS)
-        let image = Image(uiImage: UIGraphicsImageRenderer(size: size).image { _ in
-            (suitEmoji as NSString).draw(
-                in: CGRect(origin: .zero, size: size),
-                withAttributes: [.font: UIFont.systemFont(ofSize: 360)]
-            )
-        })
-        #elseif os(macOS)
-        let nativeImage = NSImage(size: size)
-        nativeImage.lockFocus()
-        (suitEmoji as NSString).draw(
-            in: CGRect(origin: .zero, size: size),
-            withAttributes: [.font: NSFont.systemFont(ofSize: 360)]
-        )
-        nativeImage.unlockFocus()
-        let image = Image(nsImage: nativeImage)
-        #else
-        let image = Image(systemName: "questionmark").resizable()
-        #endif
-        return image
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .rotationEffect(rotate ? .radians(.pi) : .zero)
-            .frame(width: availableWidth.map { $0 * 25/100 })
+            }
+        }
+        .frame(width: availableWidth.map { $0 * 20/100 })
     }
 
     private var suitView: some View { suitView() }
@@ -314,7 +274,7 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 48
+        @State private var displayedCardIndex = 9
         @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
