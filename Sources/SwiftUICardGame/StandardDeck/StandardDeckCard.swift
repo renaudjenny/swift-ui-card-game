@@ -1,5 +1,4 @@
 import SwiftUI
-import Algorithms
 
 public struct StandardDeckCard: CardRepresentable {
     public enum Rank: String, CaseIterable {
