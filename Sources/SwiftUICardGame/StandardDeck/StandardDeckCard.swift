@@ -87,18 +87,22 @@ public struct StandardDeckCard: CardRepresentable {
     @ViewBuilder
     private var mainView: some View {
         GeometryReader { geometry in
-            VStack {
-                switch rank {
-                case .ace:
-                    suitView.aspectRatio(35/100, contentMode: .fit)
-                case .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
-                    suitViews(count: rank.value, geometry: geometry)
-                case .jack, .queen, .king:
-                    EmptyView()
+            if min(geometry.size.width, geometry.size.height) < 80 {
+                EmptyView()
+            } else {
+                VStack {
+                    switch rank {
+                    case .ace:
+                        suitView.aspectRatio(35/100, contentMode: .fit)
+                    case .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
+                        suitViews(count: rank.value, geometry: geometry)
+                    case .jack, .queen, .king:
+                        EmptyView()
+                    }
                 }
+                .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 90/100)
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
-            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 90/100)
-            .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
 
@@ -182,27 +186,46 @@ public struct StandardDeckCard: CardRepresentable {
 
     private var cornerViews: some View {
         GeometryReader { geometry in
-            ZStack {
-                cornerView(availableSize: geometry.size)
-                    .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 4/100)
-                cornerView(availableSize: geometry.size)
-                    .rotationEffect(.radians(.pi))
-                    .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 76/100)
-                cornerView(availableSize: geometry.size)
-                    .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 4/100)
-                cornerView(availableSize: geometry.size)
-                    .rotationEffect(.radians(.pi))
-                    .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 76/100)
+            if min(geometry.size.width, geometry.size.height) < 80 {
+                cornerView
+                    .aspectRatio(95/100, contentMode: .fit)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+            } else {
+                let width = geometry.size.width * 20/100
+                let height = geometry.size.height * 20/100
+
+                ZStack {
+                    cornerView
+                        .frame(width: width, height: height)
+                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 4/100)
+                    cornerView
+                        .frame(width: width, height: height)
+                        .rotationEffect(.radians(.pi))
+                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 76/100)
+                    cornerView
+                        .frame(width: width, height: height)
+                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 4/100)
+                    cornerView
+                        .frame(width: width, height: height)
+                        .rotationEffect(.radians(.pi))
+                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 76/100)
+                }
             }
         }
     }
 
-    private func cornerView(availableSize: CGSize) -> some View {
+    private var cornerView: some View {
         VStack(spacing: 0) {
-            Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+            switch rank {
+            case .ace, .two, .three, .four, .five, .six, .seven,
+                    .height, .nine, .ten, .jack, .queen:
+                Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+            case .king:
+                KingShape()
+                    .foregroundColor(suit.color)
+            }
             suitView
         }
-        .frame(width: availableSize.width * 20/100, height: availableSize.height * 20/100)
     }
 
     private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
@@ -273,7 +296,7 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 9
+        @State private var displayedCardIndex = 25
         @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
@@ -281,7 +304,15 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
         var body: some View {
             VStack {
                 Spacer()
-                displayedCard.foreground.frame(maxHeight: maxHeight)
+                HStack {
+                    Spacer()
+                    displayedCard.foreground.frame(maxHeight: 50)
+                    Spacer()
+                    displayedCard.foreground.frame(maxHeight: maxHeight)
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                }
                 Spacer()
                 HStack {
                     Button("Previous") { if displayedCardIndex > 0 { displayedCardIndex -= 1 } }
