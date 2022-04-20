@@ -1,5 +1,6 @@
 import SwiftUI
 
+// swiftlint:disable function_body_length
 struct SpadesShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()

@@ -1,7 +1,7 @@
 import SwiftUI
 
+// swiftlint:disable function_body_length
 struct KingShape: Shape {
-
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let width = min(rect.width, rect.height)
@@ -144,8 +144,6 @@ struct KingShape: Shape {
                 y: rect.midY - width * 550/1000
             )
         )
-
-
         return path
     }
 }

@@ -215,14 +215,15 @@ public struct StandardDeckCard: CardRepresentable {
     }
 
     private var cornerView: some View {
-        VStack(spacing: 0) {
+        VStack {
             switch rank {
-            case .ace, .two, .three, .four, .five, .six, .seven,
-                    .height, .nine, .ten, .jack, .queen:
+            case .ace, .two, .three, .four, .five, .six, .seven, .height, .nine, .ten, .jack:
                 Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
-            case .king:
-                KingShape()
+            case .queen:
+                QueenShape()
+                    .fill(style: .init(eoFill: true))
                     .foregroundColor(suit.color)
+            case .king: KingShape().foregroundColor(suit.color)
             }
             suitView
         }

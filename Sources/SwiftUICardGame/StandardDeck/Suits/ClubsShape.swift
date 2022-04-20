@@ -1,5 +1,6 @@
 import SwiftUI
 
+// swiftlint:disable function_body_length
 struct ClubsShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -20,7 +21,6 @@ struct ClubsShape: Shape {
             endAngle: .radians(.pi * 840/1000),
             clockwise: false
         )
-
 
         path.addCurve(
             to: CGPoint(x: rect.midX + width * 220/1000, y: rect.midY + width * 470/1000),
