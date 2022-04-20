@@ -217,8 +217,10 @@ public struct StandardDeckCard: CardRepresentable {
     private var cornerView: some View {
         VStack {
             switch rank {
-            case .ace, .two, .three, .four, .five, .six, .seven, .height, .nine, .ten, .jack:
+            case .ace, .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
                 Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+            case .jack:
+                JackShape().foregroundColor(suit.color)
             case .queen:
                 QueenShape()
                     .fill(style: .init(eoFill: true))
