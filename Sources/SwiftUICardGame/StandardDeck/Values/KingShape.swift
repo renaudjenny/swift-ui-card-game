@@ -1,7 +1,7 @@
 import SwiftUI
 
-// swiftlint:disable function_body_length
 struct KingShape: Shape {
+    // swiftlint:disable:next function_body_length
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let width = min(rect.width, rect.height)

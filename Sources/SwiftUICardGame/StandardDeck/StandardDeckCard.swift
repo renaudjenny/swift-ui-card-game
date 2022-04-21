@@ -106,6 +106,7 @@ public struct StandardDeckCard: CardRepresentable {
         }
     }
 
+    // swiftlint:disable function_body_length
     @ViewBuilder
     private func suitViews(count: Int, geometry: GeometryProxy) -> some View {
         switch count {
@@ -183,6 +184,7 @@ public struct StandardDeckCard: CardRepresentable {
             EmptyView()
         }
     }
+    // swiftlint:enable function_body_length
 
     private var cornerViews: some View {
         GeometryReader { geometry in
@@ -217,8 +219,10 @@ public struct StandardDeckCard: CardRepresentable {
     private var cornerView: some View {
         VStack {
             switch rank {
-            case .ace, .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
+            case .ace, .three, .four, .five, .six, .seven, .height, .nine, .ten:
                 Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+            case .two:
+                TwoShape().foregroundColor(suit.color)
             case .jack:
                 JackShape().foregroundColor(suit.color)
             case .queen:
