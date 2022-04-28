@@ -9,7 +9,7 @@ public struct StandardDeckCard: CardRepresentable {
         case five
         case six
         case seven
-        case height
+        case eight
         case nine
         case ten
         case jack
@@ -25,7 +25,7 @@ public struct StandardDeckCard: CardRepresentable {
             case .five: return "5"
             case .six: return "6"
             case .seven: return "7"
-            case .height: return "8"
+            case .eight: return "8"
             case .nine: return "9"
             case .ten: return "10"
             case .jack: return "J"
@@ -94,7 +94,7 @@ public struct StandardDeckCard: CardRepresentable {
                     switch rank {
                     case .ace:
                         suitView.aspectRatio(35/100, contentMode: .fit)
-                    case .two, .three, .four, .five, .six, .seven, .height, .nine, .ten:
+                    case .two, .three, .four, .five, .six, .seven, .eight, .nine, .ten:
                         suitViews(count: rank.value, geometry: geometry)
                     case .jack, .queen, .king:
                         EmptyView()
@@ -219,7 +219,7 @@ public struct StandardDeckCard: CardRepresentable {
     private var cornerView: some View {
         VStack {
             switch rank {
-            case .ace, .height, .nine, .ten:
+            case .ace, .nine, .ten:
                 Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
             case .two:
                 TwoShape().foregroundColor(suit.color)
@@ -233,6 +233,10 @@ public struct StandardDeckCard: CardRepresentable {
                 SixShape().foregroundColor(suit.color)
             case .seven:
                 SevenShape().foregroundColor(suit.color)
+            case .eight:
+                EightShape()
+                    .fill(style: .init(eoFill: true))
+                    .foregroundColor(suit.color)
             case .jack:
                 JackShape().foregroundColor(suit.color)
             case .queen:
