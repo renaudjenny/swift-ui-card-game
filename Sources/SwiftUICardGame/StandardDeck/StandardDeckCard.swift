@@ -84,7 +84,6 @@ public struct StandardDeckCard: CardRepresentable {
         Text("\(rank.rawValue) of \(suit.rawValue)")
     }
 
-    @ViewBuilder
     private var mainView: some View {
         GeometryReader { geometry in
             if min(geometry.size.width, geometry.size.height) < 80 {
@@ -113,7 +112,6 @@ public struct StandardDeckCard: CardRepresentable {
         case 2:
             VStack {
                 suitView(availableWidth: geometry.size.width)
-                Spacer()
                 suitView(rotate: true, availableWidth: geometry.size.width)
             }
         case 3:
@@ -142,29 +140,19 @@ public struct StandardDeckCard: CardRepresentable {
             ZStack {
                 AnyView(suitViews(count: 6, geometry: geometry))
                 suitView(availableWidth: geometry.size.width)
-                    .offset(x: 0, y: geometry.size.height * -16/100)
+                    .offset(x: 0, y: geometry.size.height * -12/100)
             }
         case 8:
+            let side = VStack {
+                suitView(availableWidth: geometry.size.width)
+                suitView(availableWidth: geometry.size.width)
+                suitView(rotate: true, availableWidth: geometry.size.width)
+                suitView(rotate: true, availableWidth: geometry.size.width)
+            }
             HStack {
-                VStack {
-                    suitView(availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(rotate: true, availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(rotate: true, availableWidth: geometry.size.width)
-                }
+                side
                 Spacer()
-                VStack {
-                    suitView(availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(rotate: true, availableWidth: geometry.size.width)
-                    Spacer()
-                    suitView(rotate: true, availableWidth: geometry.size.width)
-                }
+                side
             }
         case 9:
             ZStack {
@@ -243,7 +231,8 @@ public struct StandardDeckCard: CardRepresentable {
                 QueenShape()
                     .fill(style: .init(eoFill: true))
                     .foregroundColor(suit.color)
-            case .king: KingShape().foregroundColor(suit.color)
+            case .king:
+                KingShape().foregroundColor(suit.color)
             }
             suitView
         }
@@ -317,7 +306,7 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 25
+        @State private var displayedCardIndex = 6
         @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
