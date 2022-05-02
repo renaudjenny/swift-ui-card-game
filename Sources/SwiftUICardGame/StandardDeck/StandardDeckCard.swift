@@ -208,7 +208,9 @@ public struct StandardDeckCard: CardRepresentable {
         VStack {
             switch rank {
             case .ace:
-                Text(rank.letter).font(.title).bold().foregroundColor(suit.color)
+                AceShape()
+                    .fill(style: .init(eoFill: true))
+                    .foregroundColor(suit.color)
             case .two:
                 TwoShape().foregroundColor(suit.color)
             case .three:
@@ -310,7 +312,7 @@ struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 9
+        @State private var displayedCardIndex = 0
         @State private var maxHeight: CGFloat = 800
         private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
         private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
