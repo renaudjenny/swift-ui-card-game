@@ -16,21 +16,21 @@ public struct StandardDeckCard: CardRepresentable {
         case queen
         case king
 
-        var letter: String {
+        var view: some View {
             switch self {
-            case .ace: return "A"
-            case .two: return "2"
-            case .three: return "3"
-            case .four: return "4"
-            case .five: return "5"
-            case .six: return "6"
-            case .seven: return "7"
-            case .eight: return "8"
-            case .nine: return "9"
-            case .ten: return "10"
-            case .jack: return "J"
-            case .queen: return "Q"
-            case .king: return "K"
+            case .ace: return AceShape().fill(style: .init(eoFill: true))
+            case .two: return TwoShape()
+            case .three: return ThreeShape()
+            case .four: return FourShape()
+            case .five: return FiveShape()
+            case .six: return SixShape()
+            case .seven: return SevenShape()
+            case .eight: return EightShape().fill(style: .init(eoFill: true))
+            case .nine: return NineShape()
+            case .ten: return TenShape()
+            case .jack: return JackShape()
+            case .queen: return QueenShape().fill(style: .init(eoFill: true))
+            case .king: return KingShape()
             }
         }
 
@@ -206,40 +206,7 @@ public struct StandardDeckCard: CardRepresentable {
 
     private var cornerView: some View {
         VStack {
-            switch rank {
-            case .ace:
-                AceShape()
-                    .fill(style: .init(eoFill: true))
-                    .foregroundColor(suit.color)
-            case .two:
-                TwoShape().foregroundColor(suit.color)
-            case .three:
-                ThreeShape().foregroundColor(suit.color)
-            case .four:
-                FourShape().foregroundColor(suit.color)
-            case .five:
-                FiveShape().foregroundColor(suit.color)
-            case .six:
-                SixShape().foregroundColor(suit.color)
-            case .seven:
-                SevenShape().foregroundColor(suit.color)
-            case .eight:
-                EightShape()
-                    .fill(style: .init(eoFill: true))
-                    .foregroundColor(suit.color)
-            case .nine:
-                NineShape().foregroundColor(suit.color)
-            case .ten:
-                TenShape().foregroundColor(suit.color)
-            case .jack:
-                JackShape().foregroundColor(suit.color)
-            case .queen:
-                QueenShape()
-                    .fill(style: .init(eoFill: true))
-                    .foregroundColor(suit.color)
-            case .king:
-                KingShape().foregroundColor(suit.color)
-            }
+            rank.view.foregroundColor(suit.color)
             suitView
         }
     }
