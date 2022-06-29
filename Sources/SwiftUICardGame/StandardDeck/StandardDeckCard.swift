@@ -1,77 +1,41 @@
 import SwiftUI
 
-public struct StandardDeckCard: CardRepresentable {
-    public enum Rank: String, CaseIterable {
-        case ace
-        case two
-        case three
-        case four
-        case five
-        case six
-        case seven
-        case eight
-        case nine
-        case ten
-        case jack
-        case queen
-        case king
+public struct StandardDeckCard<BackgroundContent: View>: View {
+    @Environment(\.colorScheme) private var colorScheme
 
-        var view: some View {
-            switch self {
-            case .ace: return AceShape().fill(style: .init(eoFill: true))
-            case .two: return TwoShape()
-            case .three: return ThreeShape()
-            case .four: return FourShape()
-            case .five: return FiveShape()
-            case .six: return SixShape()
-            case .seven: return SevenShape()
-            case .eight: return EightShape().fill(style: .init(eoFill: true))
-            case .nine: return NineShape()
-            case .ten: return TenShape()
-            case .jack: return JackShape()
-            case .queen: return QueenShape().fill(style: .init(eoFill: true))
-            case .king: return KingShape()
+    public var body: some View {
+        VStack {
+            if isFacedUp {
+                foreground.transition(.opacity.animation(.linear(duration: 0.01).delay(2/10)))
+            } else {
+                background.transition(.opacity.animation(.linear(duration: 0.01).delay(2/10)))
             }
         }
-
-        var value: Int {
-            guard self != .ace else { return 14 }
-            return (Rank.allCases.firstIndex(of: self) ?? 0) + 1
-        }
+        .modifier(Card3DRotationViewModifier(isFacedUp: isFacedUp))
+        .animation(.easeInOut(duration: 2/5), value: isFacedUp)
+        .shadow(radius: 2, x: 2, y: 2)
     }
 
-    public enum Suit: String, CaseIterable {
-        case clubs
-        case diamonds
-        case hearts
-        case spades
 
-        var color: Color {
-            switch self {
-            case .clubs, .spades: return .black
-            case .diamonds, .hearts: return .red
-            }
-        }
-    }
 
     public let rank: Rank
     public let suit: Suit
-    private(set) public var action: () -> Void
+    public let backgroundContent: () -> BackgroundContent
     public var foreground: some View {
         ZStack {
-            Color.white
+            colorScheme == .dark ? Color.black.brightness(10/100) : Color.white.brightness(-5/100)
             mainView
             cornerViews
         }
         .aspectRatio(5/7, contentMode: .fit)
         .clipShape(StandardCardShape())
-        .overlay(StandardCardShape().strokeBorder())
+        .overlay(StandardCardShape().strokeBorder(lineWidth: 1/4))
     }
     public var background: some View {
-        Rectangle()
-            .fill(Color.red)
+        backgroundContent()
+            .aspectRatio(5/7, contentMode: .fit)
             .clipShape(StandardCardShape())
-            .overlay(StandardCardShape().strokeBorder())
+            .overlay(StandardCardShape().strokeBorder(lineWidth: 1/4))
     }
     public var isFacedUp: Bool = false
     public var accessibilityIdentifier: String {
@@ -84,22 +48,40 @@ public struct StandardDeckCard: CardRepresentable {
         Text("\(rank.rawValue) of \(suit.rawValue)")
     }
 
+    public init(_ rank: Rank, of suit: Suit, isFacedUp: Bool, backgroundContent: @escaping () -> BackgroundContent) {
+        self.rank = rank
+        self.suit = suit
+        self.isFacedUp = isFacedUp
+        self.backgroundContent = backgroundContent
+    }
+
     private var mainView: some View {
         GeometryReader { geometry in
             if min(geometry.size.width, geometry.size.height) < 80 {
                 EmptyView()
             } else {
                 VStack {
-                    switch rank {
-                    case .ace:
+                    switch (rank, suit) {
+                    case (.ace, _):
                         suitView.aspectRatio(35/100, contentMode: .fit)
-                    case .two, .three, .four, .five, .six, .seven, .eight, .nine, .ten:
+                    case (.two, _), (.three, _), (.four, _),
+                        (.five, _), (.six, _), (.seven, _), (.eight, _), (.nine, _), (.ten, _):
                         suitViews(count: rank.value, geometry: geometry)
-                    case .jack, .queen, .king:
+                            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 90/100)
+                    case (.king, .diamonds):
+                        EmptyView()
+//                        Image(fromBundleName: "King of Diamonds")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fill)
+                    case (.king, .clubs):
+                        EmptyView()
+//                        Image(fromBundleName: "King of Clubs")
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fill)
+                    case (.jack, _), (.queen, _), (.king, _):
                         EmptyView()
                     }
                 }
-                .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 90/100)
                 .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
@@ -206,26 +188,16 @@ public struct StandardDeckCard: CardRepresentable {
 
     private var cornerView: some View {
         VStack {
-            rank.view.foregroundColor(suit.color)
+            rank.view.foregroundColor(.suit(suit, colorScheme: colorScheme))
             suitView
         }
     }
 
     private func suitView(rotate: Bool = false, availableWidth: CGFloat? = nil) -> some View {
-        VStack {
-            switch suit {
-            case .clubs:
-                ClubsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.black, style: .init(eoFill: true))
-            case .hearts:
-                HeartsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.red, style: .init(eoFill: true))
-            case .diamonds:
-                DiamondsShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.red, style: .init(eoFill: true))
-            case .spades:
-                SpadesShape().rotation(.radians(rotate ? .pi : 0)).fill(Color.black, style: .init(eoFill: true))
-
-            }
-        }
-        .frame(width: availableWidth.map { $0 * 20/100 })
+        suit.view
+            .rotation(.radians(rotate ? .pi : 0))
+            .fill(Color.suit(suit, colorScheme: colorScheme), style: .init(eoFill: true))
+            .frame(width: availableWidth.map { $0 * 20/100 })
     }
 
     private var suitView: some View { suitView() }
@@ -252,46 +224,64 @@ private struct StandardCardShape: InsettableShape {
     }
 }
 
-public extension CardRepresentable where Self == StandardDeckCard {
-    static func standardDeck(
-        _ rank: StandardDeckCard.Rank,
-        of suit: StandardDeckCard.Suit,
-        action: @escaping () -> Void = { }
-    ) -> StandardDeckCard {
-        StandardDeckCard(rank: rank, suit: suit, action: action)
+public extension StandardDeckCard {
+    var flipped: Self {
+        var card = self
+        card.isFacedUp.toggle()
+        return card
     }
 }
 
-public extension Array where Element == StandardDeckCard {
-    static func standard52Deck(action: @escaping (StandardDeckCard.Rank, StandardDeckCard.Suit) -> Void) -> Self {
-        StandardDeckCard.Suit.allCases.flatMap { suit in
-            StandardDeckCard.Rank.allCases.map { rank in
-                StandardDeckCard(rank: rank, suit: suit) { action(rank, suit) }
+public extension StandardDeckCard {
+    static func standard52Deck(backgroundContent: @escaping () -> BackgroundContent) -> [Self] {
+        Suit.allCases.flatMap { suit in
+            Rank.allCases.map { rank in
+                StandardDeckCard(rank, of: suit, isFacedUp: false, backgroundContent: backgroundContent)
             }
         }
     }
 }
 
 #if DEBUG
-struct CardViewAllStandardDeckCards_Previews: PreviewProvider {
+struct StandardDeckCard_Previews: PreviewProvider {
     static var previews: some View {
         Preview()
     }
 
     private struct Preview: View {
-        @State private var displayedCardIndex = 0
+        @State private var isFacedUp = true
+
+        var body: some View {
+            VStack {
+                Button { isFacedUp.toggle() } label: {
+                    StandardDeckCard(.ace, of: .spades, isFacedUp: isFacedUp) { Color.red }.padding()
+                }
+                Text(isFacedUp ? "Is faced up" : "Is faced down").animation(nil)
+            }
+            .preferredColorScheme(.dark)
+        }
+    }
+}
+
+struct CardAllStandardDeckCards_Previews: PreviewProvider {
+    static var previews: some View {
+        Preview().preferredColorScheme(.dark)
+    }
+
+    private struct Preview: View {
+        @State private var displayedCardIndex = 15
         @State private var maxHeight: CGFloat = 800
-        private let cards: [StandardDeckCard] = .standard52Deck(action: { _, _ in })
-        private var displayedCard: StandardDeckCard { cards[displayedCardIndex] }
+        private let cards: [StandardDeckCard<Color>] = StandardDeckCard.standard52Deck { Color.red }
+        private var displayedCard: StandardDeckCard<Color> { cards[displayedCardIndex].flipped }
 
         var body: some View {
             VStack {
                 Spacer()
                 HStack {
                     Spacer()
-                    displayedCard.foreground.frame(maxHeight: 50)
+                    displayedCard.frame(maxHeight: 50)
                     Spacer()
-                    displayedCard.foreground.frame(maxHeight: maxHeight)
+                    displayedCard.frame(maxHeight: maxHeight)
                     Spacer()
                     Spacer()
                     Spacer()

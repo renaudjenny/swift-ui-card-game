@@ -15,7 +15,8 @@ let package = Package(
     targets: [
         .target(
             name: "SwiftUICardGame",
-            dependencies: []
+            dependencies: [],
+            resources: [.process("StandardDeck/Resources")]
         ),
         .testTarget(
             name: "SwiftUICardGameTests",
