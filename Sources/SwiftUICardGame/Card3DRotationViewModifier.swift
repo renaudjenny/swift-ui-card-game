@@ -11,5 +11,7 @@ struct Card3DRotationViewModifier: ViewModifier {
                 axis: (x: 0.0, y: 1.0, z: 0.0),
                 perspective: 1/3
             )
+            .rotation3DEffect(isFacedUp ? .zero : .radians(.pi), axis: (x: 0.0, y: 1.0, z: 0.0))
+
     }
 }
