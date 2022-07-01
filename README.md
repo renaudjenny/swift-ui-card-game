@@ -7,14 +7,6 @@ A SwiftUI library allowing you to manipulate card game.
 This library has been tested
 * TODO
 
-## TODO
-
-- [X] Design card
-- [X] Customise background and foreground
-- [X] Flip the Card
-- [ ] Organise cards in a deck way design
-- [ ] etc.
-
 ## App using this library
 
 * TODO
