@@ -58,9 +58,9 @@ struct ImageCardView_Previews: PreviewProvider {
                     backgroundColor: .red,
                     image: Image(systemName: "leaf"),
                     isFacedUp: isFacedUp,
-                    accessibilityIdentifier: "king-of-clubs",
+                    accessibilityIdentifier: "leaf",
                     accessibilityFacedDownText: Text("A faced down card"),
-                    accessibilityFacedUpText: Text("The King of Clubs")
+                    accessibilityFacedUpText: Text("A leaf")
                 )
             }
             .buttonStyle(.plain)
