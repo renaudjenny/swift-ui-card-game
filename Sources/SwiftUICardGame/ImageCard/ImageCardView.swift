@@ -26,9 +26,9 @@ public struct ImageCardView: View {
 
     public var body: some View {
         CardView(isFacedUp: isFacedUp) {
-            foreground
+            foreground.cornerRadius(8)
         } backgroundContent: {
-            background
+            background.cornerRadius(8)
         }
     }
 
