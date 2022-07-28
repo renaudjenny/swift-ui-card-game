@@ -125,9 +125,12 @@ struct StandardDeckCardForegroundView: View {
     private var cornerViews: some View {
         GeometryReader { geometry in
             if min(geometry.size.width, geometry.size.height) < 80 {
-                cornerView
-                    .aspectRatio(95/100, contentMode: .fit)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
+                VStack(spacing: 0) {
+                    cornerView
+                        .frame(height: geometry.size.height * 15/100)
+                        .padding(.top, 4)
+                    suitView.padding(.bottom, 4)
+                }
             } else {
                 let width = geometry.size.width * 20/100
                 let height = geometry.size.height * 20/100
@@ -135,25 +138,25 @@ struct StandardDeckCardForegroundView: View {
                 ZStack {
                     cornerView
                         .frame(width: width, height: height)
-                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 4/100)
+                        .offset(x: geometry.size.width * 2/100)
                     cornerView
                         .frame(width: width, height: height)
                         .rotationEffect(.radians(.pi))
-                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 76/100)
+                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 80/100)
                     cornerView
                         .frame(width: width, height: height)
-                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 4/100)
+                        .offset(x: geometry.size.width * 80/100)
                     cornerView
                         .frame(width: width, height: height)
                         .rotationEffect(.radians(.pi))
-                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 76/100)
+                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 80/100)
                 }
             }
         }
     }
 
     private var cornerView: some View {
-        VStack {
+        HStack(spacing: 0) {
             rank.view.foregroundColor(.suit(suit, colorScheme: colorScheme))
             suitView
         }
