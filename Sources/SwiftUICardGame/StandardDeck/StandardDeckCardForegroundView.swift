@@ -127,9 +127,9 @@ struct StandardDeckCardForegroundView: View {
             if min(geometry.size.width, geometry.size.height) < 80 {
                 VStack(spacing: 0) {
                     cornerView
-                        .frame(height: geometry.size.height * 15/100)
+                        .frame(height: geometry.size.height * 1/4)
                         .padding(.top, 4)
-                    suitView.padding(.bottom, 4)
+                    suitView.padding(4)
                 }
             } else {
                 let width = geometry.size.width * 20/100
