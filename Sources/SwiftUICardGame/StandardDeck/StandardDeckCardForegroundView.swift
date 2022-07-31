@@ -33,7 +33,7 @@ struct StandardDeckCardForegroundView: View {
                     case (.two, _), (.three, _), (.four, _),
                         (.five, _), (.six, _), (.seven, _), (.eight, _), (.nine, _), (.ten, _):
                         suitViews(count: rank.value, geometry: geometry)
-                            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 90/100)
+                            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 75/100)
                     case (.king, .diamonds):
                         EmptyView()
 //                        Image(fromBundleName: "King of Diamonds")
@@ -132,25 +132,29 @@ struct StandardDeckCardForegroundView: View {
                     suitView.padding(4)
                 }
             } else {
-                let width = geometry.size.width * 20/100
-                let height = geometry.size.height * 20/100
+                let height = geometry.size.height * 10/100
 
                 ZStack {
-                    cornerView
-                        .frame(width: width, height: height)
-                        .offset(x: geometry.size.width * 2/100)
-                    cornerView
-                        .frame(width: width, height: height)
-                        .rotationEffect(.radians(.pi))
-                        .offset(x: geometry.size.width * 2/100, y: geometry.size.height * 80/100)
-                    cornerView
-                        .frame(width: width, height: height)
-                        .offset(x: geometry.size.width * 80/100)
-                    cornerView
-                        .frame(width: width, height: height)
-                        .rotationEffect(.radians(.pi))
-                        .offset(x: geometry.size.width * 80/100, y: geometry.size.height * 80/100)
+                    VStack {
+                        HStack {
+                            cornerView.frame(height: height)
+                            Spacer().frame(maxWidth: .infinity)
+                            cornerView.frame(height: height)
+
+                        }
+                        Spacer()
+                        HStack {
+                            cornerView
+                                .frame(height: height)
+                                .rotationEffect(.radians(.pi))
+                            Spacer().frame(maxWidth: .infinity)
+                            cornerView
+                                .frame(height: height)
+                                .rotationEffect(.radians(.pi))
+                        }
+                    }
                 }
+                .padding(4)
             }
         }
     }

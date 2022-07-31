@@ -87,7 +87,7 @@ struct StandardDeckCardView_Previews: PreviewProvider {
 
             return suit + randomCards
         }()
-        @State private var size: Double = 50
+        @State private var size: Double = 200
 
         var body: some View {
             VStack {
