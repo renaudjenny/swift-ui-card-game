@@ -32,8 +32,8 @@ struct StandardDeckCardForegroundView: View {
                         suitView.aspectRatio(35/100, contentMode: .fit)
                     case (.two, _), (.three, _), (.four, _),
                         (.five, _), (.six, _), (.seven, _), (.eight, _), (.nine, _), (.ten, _):
-                        suitViews(count: rank.value, geometry: geometry)
-                            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 75/100)
+                        suitViews(count: rank.value, size: geometry.size)
+                            .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 55/100)
                     case (.king, .diamonds):
                         EmptyView()
 //                        Image(fromBundleName: "King of Diamonds")
@@ -55,47 +55,48 @@ struct StandardDeckCardForegroundView: View {
 
     // swiftlint:disable function_body_length
     @ViewBuilder
-    private func suitViews(count: Int, geometry: GeometryProxy) -> some View {
+    private func suitViews(count: Int, size: CGSize) -> some View {
         switch count {
         case 2:
             VStack {
-                suitView(availableWidth: geometry.size.width)
-                suitView(rotate: true, availableWidth: geometry.size.width)
+                suitView(availableWidth: size.width)
+                Spacer().frame(maxHeight: .infinity)
+                suitView(rotate: true, availableWidth: size.width)
             }
         case 3:
             ZStack {
-                AnyView(suitViews(count: 2, geometry: geometry))
-                suitView(availableWidth: geometry.size.width)
+                AnyView(suitViews(count: 2, size: size))
+                suitView(availableWidth: size.width)
             }
         case 4:
             HStack {
-                AnyView(suitViews(count: 2, geometry: geometry))
+                AnyView(suitViews(count: 2, size: size))
                 Spacer()
-                AnyView(suitViews(count: 2, geometry: geometry))
+                AnyView(suitViews(count: 2, size: size))
             }
         case 5:
             ZStack {
-                AnyView(suitViews(count: 4, geometry: geometry))
-                suitView(availableWidth: geometry.size.width)
+                AnyView(suitViews(count: 4, size: size))
+                suitView(availableWidth: size.width)
             }
         case 6:
             HStack {
-                AnyView(suitViews(count: 3, geometry: geometry))
+                AnyView(suitViews(count: 3, size: size))
                 Spacer()
-                AnyView(suitViews(count: 3, geometry: geometry))
+                AnyView(suitViews(count: 3, size: size))
             }
         case 7:
             ZStack {
-                AnyView(suitViews(count: 6, geometry: geometry))
-                suitView(availableWidth: geometry.size.width)
-                    .offset(x: 0, y: geometry.size.height * -12/100)
+                AnyView(suitViews(count: 6, size: size))
+                suitView(availableWidth: size.width)
+                    .offset(x: 0, y: size.height * -10/100)
             }
         case 8:
             let side = VStack {
-                suitView(availableWidth: geometry.size.width)
-                suitView(availableWidth: geometry.size.width)
-                suitView(rotate: true, availableWidth: geometry.size.width)
-                suitView(rotate: true, availableWidth: geometry.size.width)
+                suitView(availableWidth: size.width)
+                suitView(availableWidth: size.width)
+                suitView(rotate: true, availableWidth: size.width)
+                suitView(rotate: true, availableWidth: size.width)
             }
             HStack {
                 side
@@ -104,17 +105,13 @@ struct StandardDeckCardForegroundView: View {
             }
         case 9:
             ZStack {
-                AnyView(suitViews(count: 8, geometry: geometry))
-                suitView(availableWidth: geometry.size.width)
-                    .offset(x: 0, y: geometry.size.height * -2/100)
+                AnyView(suitViews(count: 8, size: size))
+                suitView(availableWidth: size.width * 85/100)
             }
         case 10:
             ZStack {
-                AnyView(suitViews(count: 8, geometry: geometry))
-                suitView(availableWidth: geometry.size.width)
-                    .offset(x: 0, y: geometry.size.height * -23/100)
-                suitView(rotate: true, availableWidth: geometry.size.width)
-                    .offset(x: 0, y: geometry.size.height * 21/100)
+                AnyView(suitViews(count: 8, size: size))
+                AnyView(suitViews(count: 2, size: size.applying(CGAffineTransform(scaleX: 85/100, y: 85/100))))
             }
         default:
             EmptyView()
@@ -126,13 +123,13 @@ struct StandardDeckCardForegroundView: View {
         GeometryReader { geometry in
             if min(geometry.size.width, geometry.size.height) < 80 {
                 VStack(spacing: 0) {
-                    cornerView
+                    minimizedCornerView
                         .frame(height: geometry.size.height * 1/4)
                         .padding(.top, 4)
                     suitView.padding(4)
                 }
             } else {
-                let height = geometry.size.height * 10/100
+                let height = geometry.size.height * 20/100
 
                 ZStack {
                     VStack {
@@ -154,15 +151,22 @@ struct StandardDeckCardForegroundView: View {
                         }
                     }
                 }
-                .padding(4)
+                .padding(8)
             }
+        }
+    }
+
+    private var minimizedCornerView: some View {
+        HStack(spacing: 0) {
+            rank.view.foregroundColor(.suit(suit, colorScheme: colorScheme))
+            suitView
         }
     }
 
     private var cornerView: some View {
         HStack(spacing: 0) {
             rank.view.foregroundColor(.suit(suit, colorScheme: colorScheme))
-            suitView
+            suitView.aspectRatio(45/100, contentMode: .fit)
         }
     }
 
@@ -180,6 +184,45 @@ struct StandardDeckCardForegroundView: View {
 struct StandardDeckCardForegroundView_Previews: PreviewProvider {
     static var previews: some View {
         StandardDeckCardForegroundView(rank: .ace, suit: .spades).padding()
+    }
+}
+
+struct CardByRanks_Previews: PreviewProvider {
+    static var previews: some View {
+        Preview()
+    }
+
+    private struct Preview: View {
+        @State private var rank: Rank = .seven
+        @State private var maxHeight: CGFloat = 800
+        private var displayedCards: [StandardDeckCard] {
+            [StandardDeckCard].standard52Deck.filter { $0.rank == rank }.map {
+                var card = $0
+                card.isFacedUp = true
+                return card
+            }
+        }
+
+        var body: some View {
+            VStack {
+                Spacer()
+                HStack {
+                    VStack {
+                        StandardDeckCardView(card: displayedCards[0], backgroundContent: EmptyView.init)
+                        StandardDeckCardView(card: displayedCards[1], backgroundContent: EmptyView.init)
+                    }
+                    VStack {
+                        StandardDeckCardView(card: displayedCards[2], backgroundContent: EmptyView.init)
+                        StandardDeckCardView(card: displayedCards[3], backgroundContent: EmptyView.init)
+                    }
+                }
+                .frame(maxHeight: maxHeight)
+                Spacer()
+                Slider(value: $maxHeight, in: 10...1000) {
+                    Text("Height")
+                }
+            }.padding()
+        }
     }
 }
 
