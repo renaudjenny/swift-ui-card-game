@@ -332,4 +332,3 @@ struct KingSilhouetteShape_Previews: PreviewProvider {
     }
 }
 #endif
-
