@@ -34,17 +34,21 @@ struct StandardDeckCardForegroundView: View {
                         (.five, _), (.six, _), (.seven, _), (.eight, _), (.nine, _), (.ten, _):
                         suitViews(count: rank.value, size: geometry.size)
                             .frame(width: geometry.size.width * 60/100, height: geometry.size.height * 55/100)
-                    case (.king, .diamonds):
-                        EmptyView()
+                    case (.king, _):
+                        KingSilhouetteShape()
+                            .foregroundColor(.suit(suit, colorScheme: colorScheme))
+                            .frame(height: geometry.size.height * 60/100)
+//                    case (.king, .diamonds):
+//                        EmptyView()
 //                        Image(fromBundleName: "King of Diamonds")
 //                            .resizable()
 //                            .aspectRatio(contentMode: .fill)
-                    case (.king, .clubs):
-                        EmptyView()
+//                    case (.king, .clubs):
+//                        EmptyView()
 //                        Image(fromBundleName: "King of Clubs")
 //                            .resizable()
 //                            .aspectRatio(contentMode: .fill)
-                    case (.jack, _), (.queen, _), (.king, _):
+                    case (.jack, _), (.queen, _):
                         EmptyView()
                     }
                 }
