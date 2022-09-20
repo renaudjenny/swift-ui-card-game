@@ -53,7 +53,9 @@ struct StandardDeckCardForegroundView: View {
                             .foregroundColor(.suit(suit, colorScheme: colorScheme))
                             .frame(height: geometry.size.height * 60/100)
                     case (.jack, _):
-                        EmptyView()
+                        JackSilhouetteShape()
+                            .foregroundColor(.suit(suit, colorScheme: colorScheme))
+                            .frame(height: geometry.size.height * 50/100)
                     }
                 }
                 .frame(width: geometry.size.width, height: geometry.size.height)
